@@ -3,41 +3,49 @@
 class pulse
 {
 public:
+    int threshold = 550;                 
+    const long beatInterval = 300;  
 
-    int threshold;
-    int counter = 0;
     long lastTime = 0;
     long currentTime = 0;
+    bool latch = false;
 
-    bool detectBeat(int signal) 
+    bool detectBeat(int signal)
     {
         bool status = false;
-        if (signal == 550)
+
+        // detect a rise across threshold
+        if (!latch && signal >= threshold)
         {
-            counter = counter + 1;
-            if (counter % 2 == 0)
+            currentTime = millis();
+
+            // ignore false beats that are too close together
+            if (lastTime == 0 || (currentTime - lastTime) > beatInterval)
             {
                 status = true;
+                latch = true;
+
+                if (lastTime != 0)
+                {
+                    long timeBetween = currentTime - lastTime;
+                    int bpm = 60000 / timeBetween;
+
+                    if (bpm > 40 && bpm < 180)
+                    {
+                        Serial.println("BPM: " + String(bpm));
+                    }
+                }
+
                 lastTime = currentTime;
-                currentTime = millis();
             }
-            Serial.println("signal: " + String(signal) + " Heartbeat detected"); 
         }
+
+        // Reset latch when signal falls below threshold
+        if (signal < threshold)
+        {
+            latch = false;
+        }
+
         return status;
     }
-
-    int calculateBPM()
-    {
-        if (lastTime == 0)
-        {
-            return 0;
-        }
-        else
-        {
-            long timeBetween = currentTime - lastTime;
-            int bpm = 60000 / timeBetween;
-            return bpm;
-        } 
-    }
-    
 };
