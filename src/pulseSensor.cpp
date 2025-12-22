@@ -32,7 +32,7 @@ public:
 
                     if (bpm > 40 && bpm < 180)
                     {
-                        Serial.println("BPM: " + String(bpm));
+                        //Serial.println("BPM: " + String(bpm)); // TODO: look up pass function
                     }
                 }
 

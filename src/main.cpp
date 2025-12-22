@@ -3,9 +3,13 @@
 
 int const pulse_sensor_pin = 0;
 
-void setup() 
+unsigned long startTime;
+unsigned long tov;
+
+void setup()
 {
   Serial.begin(9600);
+  startTime = millis();
  
 }
 
@@ -16,5 +20,15 @@ pulse newPulse;
 void loop() 
 {
   int signal = analogRead(pulse_sensor_pin);
+  tov = millis() - startTime;
+
+  // send variables to python code
+  Serial.print(signal);
+  Serial.print(",");
+  Serial.println(tov);
+
+ // detect heartbeat and ouput BPM
   newPulse.detectBeat(signal);
+  
+  //delay(300); //refractory period
 }
