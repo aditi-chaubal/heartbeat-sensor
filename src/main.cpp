@@ -22,13 +22,14 @@ void loop()
   int signal = analogRead(pulse_sensor_pin);
   tov = millis() - startTime;
 
+  bool beat = newPulse.detectBeat(signal);
+  
+
   // send variables to python code
   Serial.print(signal);
   Serial.print(",");
-  Serial.println(tov);
+  Serial.print(tov);
+  Serial.print(",");
+  Serial.println(beat ? 1 : 0);
 
- // detect heartbeat and ouput BPM
-  newPulse.detectBeat(signal);
-  
-  //delay(300); //refractory period
 }
